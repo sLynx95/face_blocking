@@ -19,13 +19,17 @@ X, y = [], []
 def base_face_detection(img_array, label_id):
     # find faces on image
     faces = CASCADE_CLF.detectMultiScale(img_array, scaleFactor=1.5, minNeighbors=5)
-    for (x1, y1, x2, y2) in faces:
-        interest_region_gray = Image.fromarray(img_array[y1:y1 + y2, x1:x1 + x2], mode="L")
-        interest_region_gray_resized = interest_region_gray.resize(SIZE, Image.ANTIALIAS)
-        # interest_region_gray_resized.show()
-        current_roi = np.array(interest_region_gray_resized, dtype="uint8")
-        if current_roi:
-            return current_roi, label_id
+    if isinstance(faces, tuple):
+        return
+    else:
+        for (x1, y1, x2, y2) in faces:
+            interest_region_gray = Image.fromarray(img_array[y1:y1 + y2, x1:x1 + x2], mode="L")
+            interest_region_gray_resized = interest_region_gray.resize(SIZE, Image.ANTIALIAS)
+            # interest_region_gray_resized.show()
+            current_roi = np.array(interest_region_gray_resized, dtype="uint8")
+            if current_roi.all():
+                # interest_region_gray_resized.show()
+                return current_roi, label_id
 
 
 def base_create_face_recognizer(data, labels, path):
@@ -38,7 +42,7 @@ for root, dirs, files in os.walk(IMG_DIR):
         if file.endswith("jpg") or file.endswith('png'):
             file_path = os.path.join(root, file)
             label = os.path.basename(root).replace("_", " ").lower()
-            print(file_path)
+            # print(file_path)
 
             # add new labels as int
             if label not in y_ids:
@@ -54,10 +58,14 @@ for root, dirs, files in os.walk(IMG_DIR):
 
             # open image from path in black/white mode
             gray_img = Image.open(file_path).convert(mode="L")
+            # gray_img.show()
             gray_img_array = np.array(gray_img, dtype="uint8")
-            curr_roi, curr_y = base_face_detection(img_array=gray_img_array, label_id=y_id)
-            X.append(curr_roi)
-            y.append(curr_y)
+            try:
+                curr_roi, curr_y = base_face_detection(img_array=gray_img_array, label_id=y_id)
+                X.append(curr_roi)
+                y.append(curr_y)
+            except TypeError:
+                print(f"Can't find any face on path: {file_path}")
 
 with open("labels.pickle", 'wb') as f:
     pickle.dump(y_ids, f)

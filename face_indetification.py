@@ -8,12 +8,13 @@ SIZE = (550, 550)
 with open("labels.pickle", 'rb') as file:
     LABELS = pickle.load(file)
     LABELS = {id_: label for label, id_ in LABELS.items()}
-print(LABELS)
+
 CASCADE_CLF = cv2.CascadeClassifier('cascades/data/haarcascade_frontalface_default.xml')
 FACE_RECOGNIZER = cv2.face.LBPHFaceRecognizer_create()
 FACE_RECOGNIZER.read('recognize_trained.yml')
 
 if __name__ == '__main__':
+    print(LABELS)
     capture = cv2.VideoCapture(0)
     while True:
         # Capture frame-by-frame
