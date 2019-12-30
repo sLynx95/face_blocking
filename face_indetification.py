@@ -36,15 +36,15 @@ if __name__ == '__main__':
                 color = (255, 255, 255)
                 stroke = 2
                 cv2.putText(frame, name, (x1, y1), font, 1, color, stroke, cv2.LINE_AA)
+                fill_color = (139, 216, 198)  # BGR 0-255
+                cv2.rectangle(frame, (x1, y1), (x1 + x2, y1 + y2), fill_color, -1)
+            cv2.rectangle(frame, (x1, y1), (x1 + x2, y1 + y2), (255, 255, 255), 2)
 
-            cv2.imwrite('roi_item.png', interest_region_gray_resized_arr)
+            # cv2.imwrite('roi_item.png', interest_region_gray_resized_arr)
             # cv2.imwrite('images/sebastian/8.png', interest_region_color)
-            rectangle_color = (0, 255, 0)   # BGR 0-255
-            rectangle_stroke = 2
-            cv2.rectangle(frame, (x1, y1), (x1+x2, y1+y2), rectangle_color, rectangle_stroke)
 
         # Display the resulting frame
-        cv2.imshow('frame', frame)
+        cv2.imshow('video', frame)
         if cv2.waitKey(20) & 0xFF == ord('q'):
             break
 
