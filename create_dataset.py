@@ -12,7 +12,7 @@ from face_indetification import FACE_RECOGNIZER
 from face_detection import FaceDetector
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--detection_type', default='base', choices=['base', 'caffe'])
+parser.add_argument('-t', '--detection_type', default='base', choices=['base', 'caffe'])
 args = parser.parse_args()
 detection_type = args.detection_type
 detector = FaceDetector(detection_type)

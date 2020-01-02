@@ -8,9 +8,9 @@ from face_indetification import CASCADE_CLF, SIZE
 from face_detection import FaceDetector
 
 parser_pic = argparse.ArgumentParser()
-parser_pic.add_argument('--name')
-parser_pic.add_argument('--detection_type', choices=['base', 'caffe'], default='base')
-parser_pic.add_argument('--only_face', choices=['False', 'True'], default='False')
+parser_pic.add_argument('-n', '--name')
+parser_pic.add_argument('-t', '--detection_type', choices=['base', 'caffe'], default='base')
+parser_pic.add_argument('-f', '--only_face', choices=['False', 'True'], default='False')
 args = parser_pic.parse_args()
 
 dir_name = args.name

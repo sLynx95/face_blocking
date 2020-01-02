@@ -14,7 +14,7 @@ FACE_RECOGNIZER = cv2.face.LBPHFaceRecognizer_create()
 FACE_RECOGNIZER.read('recognize_trained.yml')
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--detection_type', choices=['base', 'caffe'])
+parser.add_argument('-t', '--detection_type', choices=['base', 'caffe'])
 args = parser.parse_args()
 detection_type = args.detection_type
 
