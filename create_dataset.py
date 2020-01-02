@@ -1,6 +1,8 @@
 import os
 import sys
 import pickle
+import argparse
+import subprocess
 import cv2
 import numpy as np
 import pandas as pd
@@ -9,10 +11,10 @@ from PIL import Image
 from face_indetification import FACE_RECOGNIZER
 from face_detection import FaceDetector
 
-try:
-    detection_type = sys.argv[1].lower()
-except IndexError:
-    detection_type = "base"
+parser = argparse.ArgumentParser()
+parser.add_argument('--detection_type', default='base', choices=['base', 'caffe'])
+args = parser.parse_args()
+detection_type = args.detection_type
 detector = FaceDetector(detection_type)
 
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))

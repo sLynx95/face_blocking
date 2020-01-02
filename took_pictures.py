@@ -1,36 +1,54 @@
 import sys
 import os
 import cv2
+import argparse
+import subprocess
 
-SIZE = (550, 550)
-CASCADE_CLF = cv2.CascadeClassifier('cascades/data/haarcascade_frontalface_default.xml')
+from face_indetification import CASCADE_CLF, SIZE
+from face_detection import FaceDetector
 
+parser_pic = argparse.ArgumentParser()
+parser_pic.add_argument('--name')
+parser_pic.add_argument('--detection_type', choices=['base', 'caffe'], default='base')
+parser_pic.add_argument('--only_face', choices=['False', 'True'], default='False')
+args = parser_pic.parse_args()
+
+dir_name = args.name
+detection_type = args.detection_type
+only_face = args.only_face
 
 if __name__ == '__main__':
     capture = cv2.VideoCapture(0)
     num = 0
     while True:
-        try:
-            img_dir = f'images/{sys.argv[1]}/'
-            os.makedirs(img_dir, exist_ok=True)
-        except IndexError:
+        if dir_name is None:
             print('You must pass your name as argument!')
+            # subprocess.run(["python", "took_pictures.py", "-h"])
             break
 
+        img_dir = f'images/{dir_name}/'
+        os.makedirs(img_dir, exist_ok=True)
+        detector = FaceDetector(detection_type)
         num += 1
         # Capture frame-by-frame
         val, frame = capture.read()
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        faces = CASCADE_CLF.detectMultiScale(gray_frame, scaleFactor=1.5, minNeighbors=5)
-        for (x1, y1, x2, y2) in faces:
-            roi = frame[y1:y1+y2, x1:x1+x2]
-            # cv2.rectangle(frame, (x1, y1), (x1 + x2, y1 + y2), (255, 255, 255), 2)
-            print(f'face num {num}')
-            cv2.imwrite(f'{img_dir}/{num}.png', roi)
+        print(f'face num {num}')
+
+        try:
+            start_x, start_y, end_x, end_y = detector.get_coordinates(frame)
+            roi_ = frame[start_y:end_y, start_x:end_x]
+        except TypeError:
+            continue
+        cv2.rectangle(frame, (start_x, start_y), (end_x, end_y), (255, 255, 255), 2)
+        if only_face:
+            cv2.imwrite(f'{img_dir}/{num}.png', roi_)
+        else:
+            cv2.imwrite(f'{img_dir}/{num}.png', frame)
 
         # Display the resulting frame
         cv2.imshow('video', frame)
-        if num == 1000:
+        if (cv2.waitKey(20) & 0xFF == ord('q')) or num == 1000:
             break
     # When everything done, release the capture
     capture.release()
