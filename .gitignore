@@ -1,11 +1,9 @@
 .idea
 venv
 __pycache__/
-__init__.py
 *.jpg
 *.png
 *.JPG
 *.jpeg
-*.yml
-*.json
-*.pickle
+#*.yml
+#*.pickle
