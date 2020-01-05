@@ -1,29 +1,27 @@
-import sys
 import os
 import cv2
 import argparse
 import subprocess
 
-from face_indetification import CASCADE_CLF, SIZE
 from face_detection import FaceDetector
 
-parser_pic = argparse.ArgumentParser()
-parser_pic.add_argument('-n', '--name')
-parser_pic.add_argument('-t', '--detection_type', choices=['base', 'caffe'], default='base')
-parser_pic.add_argument('-f', '--only_face', choices=['False', 'True'], default='False')
-args = parser_pic.parse_args()
-
-dir_name = args.name
-detection_type = args.detection_type
-only_face = args.only_face
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-n', '--name')
+    parser.add_argument('-t', '--detection_type', choices=['base', 'caffe'], default='caffe')
+    parser.add_argument('-f', '--only_face', choices=['no', 'yes'], default="no")
+    args = parser.parse_args()
+    dir_name = args.name
+    detection_type = args.detection_type
+    only_face = True if args.only_face == 'yes' else False
+
     capture = cv2.VideoCapture(0)
     num = 0
     while True:
         if dir_name is None:
             print('You must pass your name as argument!')
-            # subprocess.run(["python", "took_pictures.py", "-h"])
+            subprocess.run(["python", "took_pictures.py", "-h"])
             break
 
         img_dir = f'images/{dir_name}/'
