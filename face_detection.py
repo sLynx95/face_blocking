@@ -50,6 +50,7 @@ class FaceDetector:
                 if multi_face:
                     return confidences
                 return [max(confidences)]
+            return []
 
         # load model
         net = cv2.dnn.readNetFromCaffe(prototxt, model)
@@ -68,7 +69,7 @@ class FaceDetector:
                 box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
                 (start_x_, start_y_, end_x_, end_y_) = box.astype("int")
                 if len(best_conf) == 1:
-                    return start_x_, start_y_, end_x_, end_y_
+                    return [(start_x_, start_y_, end_x_, end_y_)]
                 else:
                     faces.append((start_x_, start_y_, end_x_, end_y_))
         return faces
@@ -79,12 +80,9 @@ class FaceDetector:
         cascade_clf = cv2.CascadeClassifier('cascades/data/haarcascade_frontalface_default.xml')
         faces = cascade_clf.detectMultiScale(_img_array, scaleFactor=1.5, minNeighbors=5)
         if isinstance(faces, tuple):
-            return
+            return []
         else:
-            for (x1_, y1_, x2_, y2_) in faces:
-                start_x_, end_x_ = x1_, x1_ + x2_
-                start_y_, end_y_ = y1_, y1_ + y2_
-                return start_x_, start_y_, end_x_, end_y_
+            return list(map(lambda face: (face[0], face[1], face[0] + face[2], face[1] + face[3]), faces))
 
     def base_detection(self, _img_array, _label):
         start_x, start_y, end_x, end_y = self.get_base_coordinates(_img_array)
