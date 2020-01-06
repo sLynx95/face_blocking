@@ -15,7 +15,7 @@ class FaceDetector:
         self._color_roi = None
         self._detection_type = detection_type.lower()
 
-    def get_coordinates(self, _img_array, _multi_face):
+    def get_coordinates(self, _img_array, _multi_face=False):
         if self._detection_type == "base":
             _img_array = cv2.cvtColor(_img_array, cv2.COLOR_BGR2GRAY)
             return self.get_base_coordinates(_img_array)
