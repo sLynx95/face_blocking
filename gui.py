@@ -37,7 +37,7 @@ class App:
         try:
             frame = self.vid.get_processed_frame(_demo=self.demo_mode.get())
 
-            self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(frame))
+            self.photo = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)))
             self.canvas.create_image(0, 0, image = self.photo, anchor = tkinter.NW)
         except Exception as e:
             print(traceback.format_exc())
