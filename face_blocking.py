@@ -16,6 +16,7 @@ class FaceBlocking:
         self.detector = FaceDetector(detection_type)
         self.face_recognizer = FaceRecognizer(recognition_type)
         self.embedding_model = load_model(os.path.join(MODELS_DIR, "facenet_keras.h5"))
+        self.labels = self.face_recognizer.labels
 
         self.capture = cv2.VideoCapture(video_source)
         if not self.capture.isOpened():
@@ -28,7 +29,7 @@ class FaceBlocking:
         if self.capture.isOpened():
             self.capture.release()
 
-    def get_processed_frame(self, _demo=False):
+    def get_processed_frame(self, _block_list=[], _debug=False):
         val, frame = self.capture.read()
 
         faces = self.detector.get_coordinates(frame, _multi_face=True)
@@ -36,18 +37,19 @@ class FaceBlocking:
             start_x, start_y, end_x, end_y = faces[i]
             roi_color = frame[start_y:end_y, start_x:end_x]
             who_face, conf = self.face_recognizer.face_classification(roi_color, self.embedding_model)
-            if conf >= self.MIN_CONF:
-                self.block_face(frame, who_face, start_x, start_y, end_x, end_y, _demo)
-            if not _demo:
-                cv2.rectangle(frame, (start_x, start_y), (end_x, end_y), (255, 255, 255), 2)
-        
+            if conf >= self.MIN_CONF and who_face in _block_list:
+                self.block_face(frame, who_face, start_x, start_y, end_x, end_y)
+            if _debug:
+                self.draw_debug(frame, who_face, start_x, start_y, end_x, end_y)
+
         return frame
-    
-    def block_face(self, _frame, _name, _start_x, _start_y, _end_x, _end_y, _demo=False):
+
+    def draw_debug(self, _frame, _name, _start_x, _start_y, _end_x, _end_y):
         font = cv2.FONT_HERSHEY_SIMPLEX
-        color_text = (255, 255, 255)
-        fill_color = self.COVER_COLOR
+        color = (255, 255, 255)
         stroke = 2
-        if not _demo:
-            cv2.putText(_frame, _name, (_start_x, _start_y), font, 1, color_text, stroke, cv2.LINE_AA)
-        cv2.rectangle(_frame, (_start_x, _start_y), (_end_x, _end_y), fill_color, -1)
+        cv2.putText(_frame, _name, (_start_x, _start_y), font, 1, color, stroke, cv2.LINE_AA)
+        cv2.rectangle(_frame, (_start_x, _start_y), (_end_x, _end_y), color, stroke)
+    
+    def block_face(self, _frame, _name, _start_x, _start_y, _end_x, _end_y):
+        cv2.rectangle(_frame, (_start_x, _start_y), (_end_x, _end_y), self.COVER_COLOR, -1)

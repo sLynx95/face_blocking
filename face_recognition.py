@@ -21,14 +21,14 @@ FILES_DIR = os.path.join(PROJECT_DIR, 'files')
 class FaceRecognizer:
     def __init__(self, recognition_type):
         self._recognition_type = recognition_type
+        self.recognizer = SuppVecMachinesRecognizer() if self._recognition_type == 'svm' else BaseRecognizer()
+        self.labels = self.recognizer.labels
 
     def face_classification(self, face, embedding_model):
         if self._recognition_type == 'base':
-            recognizer = BaseRecognizer()
-            return recognizer.predict(face)
+            return self.recognizer.predict(face)
         elif self._recognition_type == 'svm':
-            recognizer = SuppVecMachinesRecognizer()
-            return recognizer.predict(face, embedding_model)
+            return self.recognizer.predict(face, embedding_model)
 
 
 class BaseRecognizer:
@@ -38,16 +38,16 @@ class BaseRecognizer:
         self._labels_path = os.path.join(FILES_DIR, "labels.pickle")
         if os.path.exists(self._trained_file_path):
             self._recognizer.read(self._trained_file_path)
+        self.labels = list(self.get_labels().values())
 
     def train_clf(self, data, labels):
         self._recognizer.train(data, np.asarray(labels))
         self._recognizer.save(self._trained_file_path)
 
     def predict(self, roi):
-        labels = self.get_labels()
         gray_roi = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
         face_id, conf = self._recognizer.predict(gray_roi)
-        return labels[face_id], conf
+        return self.labels[face_id], conf
 
     def get_labels(self):
         with open(self._labels_path, 'rb') as file:
@@ -68,6 +68,7 @@ class SuppVecMachinesRecognizer:
         except FileNotFoundError:
             self._clf = SVC(gamma=0.001, kernel='linear', probability=True)
             self.label_encoder = LabelEncoder()
+        self.labels = self.label_encoder.classes_
 
     def test_clf(self, X, y, stats, cv_=KFold(n_splits=10, shuffle=True, random_state=42)):
         scores, y_trues, y_predicts = [], [], []
