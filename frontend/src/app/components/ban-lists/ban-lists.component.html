@@ -1,0 +1,31 @@
+<span>User list</span>
+<span>Faces to block</span>
+<span></span>
+<span>{{ selectedUser$.value ? selectedUser$.value + ' ban list' : 'Ban list' }}</span>
+
+<app-selectable-list [items]="users$ | async"
+    [multiselect]="false"
+    (selectionChange)="selectedUser$.next($event[0])">
+</app-selectable-list>
+
+<app-selectable-list [items]="labels$ | async"
+    (selectionChange)="selectedLabels$.next($event)">
+</app-selectable-list>
+
+<div class="operations">
+    <button type="button" class="btn btn-dark" (click)="banAction$.next()">
+        <i class="fa fa-arrow-right"></i> Ban
+    </button>
+    <button type="button" class="btn btn-light" (click)="unbanAction$.next()">
+        <i class="fa fa-arrow-left"></i> Unban
+    </button>
+</div>
+
+<app-selectable-list [items]="bans$ | async"
+    (selectionChange)="selectedBans$.next($event)"
+    *ngIf="!!selectedUser$.value; else selectUser">
+</app-selectable-list>
+
+<ng-template #selectUser>
+    <i>Select user</i>
+</ng-template>

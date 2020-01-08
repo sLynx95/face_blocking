@@ -1,0 +1,25 @@
+:host {
+    display: grid;
+    grid-template-columns: 1fr 1fr min-content 1fr;
+    grid-template-rows: min-content 1fr;
+    column-gap: 10px;
+    row-gap: 5px;
+
+    span {
+        text-align: center;
+    }
+}
+
+.operations {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    * + * {
+        margin-top: 10px;
+    }
+
+    button {
+        white-space: nowrap;
+    }
+}

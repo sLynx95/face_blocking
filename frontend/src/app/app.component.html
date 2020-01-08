@@ -1,0 +1,11 @@
+<ng-container *ngIf="{
+    loggedState: loggedState$ | async,
+    token: token$ | async,
+    username: username$ | async
+} as state">
+    <app-navigation [token]="state.token" [username]="state.username"></app-navigation>
+    <div class="content" [ngSwitch]="state.loggedState">
+        <app-ban-lists *ngSwitchCase="'loggedIn'" [token]="state.token"></app-ban-lists>
+        <app-login *ngSwitchDefault></app-login>
+    </div>
+</ng-container>

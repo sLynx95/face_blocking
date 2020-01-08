@@ -1,0 +1,11 @@
+<ul class="list-group" *ngIf="!!items.length; else emptyList">
+    <li class="list-group-item" *ngFor="let item of items"
+        [ngClass]="{ 'active': selectedItems.indexOf(item) !== -1 }"
+        (click)="toggleSelection(item)">
+        {{ item }}
+    </li>
+</ul>
+
+<ng-template #emptyList>
+    <i>No items</i>
+</ng-template>

@@ -1,0 +1,11 @@
+<nav class="navbar navbar-dark bg-dark">
+    <span class="navbar-brand mb-0 h1">Face blocking system</span>
+    <div *ngIf="token; else loggedOut" class="user-info">
+        <span class="text-white">Logged in as {{ username }}</span>
+        <button type="button" class="btn btn-primary" (click)="logout()">Logout</button>
+    </div>
+</nav>
+
+<ng-template #loggedOut>
+    <span class="text-white">Not logged in</span>
+</ng-template>

@@ -1,0 +1,20 @@
+<div class="card" *ngIf="loggedState$ | async as loggedState">
+    <div class="card-body">
+        <div class="form-group">
+            <label for="login">Login</label>
+            <input type="email" class="form-control" id="login" placeholder="Enter login"
+                [ngClass]="{ 'is-invalid': loggedState === 'wrongCredentials' }"
+                [(ngModel)]="username">
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" class="form-control" id="password" placeholder="Enter password"
+                [(ngModel)]="password"
+                [ngClass]="{ 'is-invalid': loggedState === 'wrongCredentials' }">
+            <div class="invalid-feedback" *ngIf="loggedState === 'wrongCredentials'">
+                Invalid credentials, try again.
+            </div>
+        </div>
+        <button type="button" class="btn btn-primary" (click)="login()">Login</button>
+    </div>
+</div>

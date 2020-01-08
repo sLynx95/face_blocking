@@ -10,7 +10,7 @@ FILES_DIR = os.path.join(PROJECT_DIR, 'files')
 
 class FaceBlocking:
     def __init__(self, detection_type, recognition_type, video_source=0):
-        self.COVER_COLOR = (255, 0, 0)
+        self.COVER_COLOR = (0, 0, 0)
         self.MIN_CONF = 40
 
         self.detector = FaceDetector(detection_type)
