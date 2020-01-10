@@ -17,7 +17,7 @@ if __name__ == '__main__':
     only_face = True if args.only_face == 'yes' else False
 
     capture = cv2.VideoCapture(0)
-    num = 0
+    num = 1
     while True:
         if dir_name is None:
             print('You must pass your name as argument!')
@@ -27,22 +27,23 @@ if __name__ == '__main__':
         img_dir = f'images/{dir_name}/'
         os.makedirs(img_dir, exist_ok=True)
         detector = FaceDetector(detection_type)
-        num += 1
         # Capture frame-by-frame
         val, frame = capture.read()
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        print(f'face num {num}')
 
         try:
-            start_x, start_y, end_x, end_y = detector.get_coordinates(frame)
+            start_x, start_y, end_x, end_y = detector.get_coordinates(frame)[0]
             roi_ = frame[start_y:end_y, start_x:end_x]
+            cv2.rectangle(frame, (start_x, start_y), (end_x, end_y), (255, 255, 255), 2)
+            if only_face:
+                cv2.imwrite(f'{img_dir}/{num}.png', roi_)
+            else:
+                cv2.imwrite(f'{img_dir}/{num}.png', frame)
+            print(f'face no. {num}')
+            num += 1
+
         except TypeError:
-            continue
-        cv2.rectangle(frame, (start_x, start_y), (end_x, end_y), (255, 255, 255), 2)
-        if only_face:
-            cv2.imwrite(f'{img_dir}/{num}.png', roi_)
-        else:
-            cv2.imwrite(f'{img_dir}/{num}.png', frame)
+            pass
 
         # Display the resulting frame
         cv2.imshow('video', frame)

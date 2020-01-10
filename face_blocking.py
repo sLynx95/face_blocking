@@ -33,6 +33,7 @@ class FaceBlocking:
         val, frame = self.capture.read()
 
         faces = self.detector.get_coordinates(frame, _multi_face=True)
+        faces = faces if faces is not None else []
         for i in range(len(faces)):
             start_x, start_y, end_x, end_y = faces[i]
             roi_color = frame[start_y:end_y, start_x:end_x]

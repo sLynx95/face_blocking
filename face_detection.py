@@ -31,7 +31,7 @@ class FaceDetector:
         return self._roi, self._label, self._color_roi
 
     def caffe_detection(self, _img_array, _label, _multi_face):
-        start_x, start_y, end_x, end_y = self.get_caffe_coordinates(_img_array, _multi_face)
+        start_x, start_y, end_x, end_y = self.get_caffe_coordinates(_img_array, _multi_face)[0]
         mono_img_array = cv2.cvtColor(_img_array, cv2.COLOR_BGR2GRAY)
         _roi = mono_img_array[start_y:end_y, start_x:end_x]
         _color_roi = _img_array[start_y:end_y, start_x:end_x]
@@ -63,6 +63,8 @@ class FaceDetector:
 
         best_conf = get_best_faces(_multi_face)
         faces = []
+        if not best_conf:
+            return
         for i in range(0, detections.shape[2]):
             confidence = detections[0, 0, i, 2]
             if confidence in best_conf:
@@ -75,14 +77,15 @@ class FaceDetector:
         return faces
 
     @staticmethod
-    def get_base_coordinates(_img_array):
+    def get_base_coordinates(_img_array, _multi_face=True):
         # find faces on image
         cascade_clf = cv2.CascadeClassifier('cascades/data/haarcascade_frontalface_default.xml')
         faces = cascade_clf.detectMultiScale(_img_array, scaleFactor=1.5, minNeighbors=5)
         if isinstance(faces, tuple):
-            return []
-        else:
+            return
+        if _multi_face:
             return list(map(lambda face: (face[0], face[1], face[0] + face[2], face[1] + face[3]), faces))
+        return faces[0][0], faces[0][1], faces[0][0]+faces[0][2], faces[0][1]+faces[0][3]
 
     def base_detection(self, _img_array, _label):
         start_x, start_y, end_x, end_y = self.get_base_coordinates(_img_array)
